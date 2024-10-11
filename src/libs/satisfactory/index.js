@@ -105,7 +105,6 @@ export const getSatisfactoryData = (type, version) => {
     satisfactory_data_new[localVersion] = {
       ...satisfactory_data[localVersion],
     };
-    console.log(satisfactory_data_new[localVersion]);
     if (localVersion === 'v1000') {
       const keynames = Object.keys(satisfactory_data_new[localVersion].items);
       data_v1000.items.forEach((item) => {
@@ -115,8 +114,6 @@ export const getSatisfactoryData = (type, version) => {
 
         if (foundItem) {
           satisfactory_data_new[localVersion].items[foundItem].tier = item.tier;
-        } else {
-          console.log(item.name, foundItem);
         }
       });
       data_v1000.fluids.forEach((item) => {
@@ -126,8 +123,6 @@ export const getSatisfactoryData = (type, version) => {
 
         if (foundItem) {
           satisfactory_data_new[localVersion].items[foundItem].tier = item.tier;
-        } else {
-          console.log(item.name, foundItem);
         }
       });
     }

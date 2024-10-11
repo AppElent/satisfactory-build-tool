@@ -18,20 +18,18 @@ const RecipeSelector = ({
   //   () => _.sortBy(getSatisfactoryDataArray('items', version), 'name'),
   //   [version]
   // );
-  const [savedRecipeList, setSavedRecipeList, deleteSavedRecipeList] = useLocalStorage(
-    'satisfactory_preferred_recipe_list',
-    []
-  );
+  // const [savedRecipeList, setSavedRecipeList, deleteSavedRecipeList] = useLocalStorage(
+  //   'satisfactory_preferred_recipe_list',
+  //   []
+  // );
 
   //const initialPreferredRecipes = _.unionBy(savedRecipeList, preferredRecipes, 'product');
 
   //const [recipeState, setRecipeState] = useState(preferredRecipes);
 
-  useEffect(() => {
-    if (savedRecipeList) setPreferredRecipes(savedRecipeList?.filter((l) => l.product && l.recipe));
-  }, [savedRecipeList]);
-
-  console.log(savedRecipeList);
+  // useEffect(() => {
+  //   if (savedRecipeList) setPreferredRecipes(savedRecipeList?.filter((l) => l.product && l.recipe));
+  // }, [savedRecipeList]);
 
   return (
     <RecipeSelectorTable
