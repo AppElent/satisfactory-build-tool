@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { useCallback, useEffect, useState } from 'react';
-import { useAuth } from '../context/auth';
+import { useAuth } from '../libs/auth';
 import { useRouter } from '../hooks/use-router';
 
 const AuthGuard = (props) => {

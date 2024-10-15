@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useQueryParam } from 'use-query-params';
 
 const useTabs = ({ initial = '', queryParamName, tabsData }) => {
-  const [tab, setTab] = useState(initial);
+  const [tab, setTab] = useState(initial ? initial : tabsData[0].value);
   const [query, setQuery] = useQueryParam(queryParamName);
 
   useEffect(() => {

@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { v4 as uuidv4 } from 'uuid';
 import {
   Table,
   TableBody,
@@ -48,7 +47,6 @@ const CustomTable = ({
   save,
   editable,
   selectable,
-  getRowId,
   deleteFn,
   dense,
 }) => {
@@ -72,7 +70,7 @@ const CustomTable = ({
         }
         if (column.unique) {
           schema = schema.test('unique', `${column.label} must be unique`, function (value) {
-            const { path, parent, options } = this;
+            const { options } = this;
             const values = options.context;
             const uniqueValues = values.map((row) => row[column.accessor]);
             return uniqueValues.filter((v) => v === value).length <= 1;
@@ -385,7 +383,6 @@ CustomTable.propTypes = {
   save: PropTypes.func,
   editable: PropTypes.bool,
   selectable: PropTypes.bool,
-  getRowId: PropTypes.func,
   deleteFn: (props, propName, componentName) => {
     if (
       (props.editable || props.selectable) &&

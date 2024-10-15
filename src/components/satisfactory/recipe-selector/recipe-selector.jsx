@@ -1,7 +1,4 @@
-import _ from 'lodash';
 import PropTypes from 'prop-types';
-import { useEffect } from 'react';
-import useLocalStorage from '../../../hooks/use-local-storage';
 import RecipeSelectorTable from './recipe-selector-table';
 
 const RecipeSelector = ({

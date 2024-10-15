@@ -18,7 +18,7 @@ function PaperComponent(props) {
 }
 
 const useDialog = (initialMode = false, initialData) => {
-  const [, setModalOpen] = useState(initialMode);
+  const [modalOpen, setModalOpen] = useState(initialMode);
   const [height, setHeight] = useState(100);
   const [width, setWidth] = useState(300);
   const [data, setData] = useState(initialData);
@@ -35,7 +35,7 @@ const useDialog = (initialMode = false, initialData) => {
   };
 
   return {
-    open,
+    open: modalOpen,
     data,
     setData,
     setDialogOpen,

@@ -2,7 +2,7 @@ import _ from 'lodash';
 import PropTypes from 'prop-types';
 
 import CustomTable from '../../default/custom-table';
-import { getSatisfactoryData, getSatisfactoryDataArray } from '../../../libs/satisfactory';
+import { getSatisfactoryDataArray } from '../../../libs/satisfactory';
 import { useMemo } from 'react';
 import { MenuItem, Select } from '@mui/material';
 

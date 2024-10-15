@@ -3,10 +3,11 @@ import HelpIcon from '@mui/icons-material/Help';
 import PropTypes from 'prop-types';
 import { Seo } from '../../components/default/seo';
 import TabSection from '../../components/default/tab-section';
+import { OPTIONS } from '../../App';
 
 const lightColor = 'rgba(255, 255, 255, 0.7)';
 
-const DefaultPaperbasePage = ({ title, tabs, children }) => {
+const DefaultPaperbasePage = ({ title, tabs, buttons, children }) => {
   return (
     <>
       <Seo title={title} />
@@ -40,6 +41,9 @@ const DefaultPaperbasePage = ({ title, tabs, children }) => {
                 sx={{ borderColor: lightColor }}
                 variant="outlined"
                 color="inherit"
+                onClick={() => {
+                  OPTIONS.issueDialogOpen(true);
+                }}
                 size="small"
               >
                 Submit issue
@@ -55,7 +59,12 @@ const DefaultPaperbasePage = ({ title, tabs, children }) => {
           </Grid>
         </Toolbar>
       </AppBar>
-      {tabs && <TabSection tabs={tabs} />}
+      {(tabs || buttons) && (
+        <TabSection
+          tabs={tabs}
+          buttons={buttons}
+        ></TabSection>
+      )}
 
       <Box
         component="main"
@@ -70,6 +79,7 @@ const DefaultPaperbasePage = ({ title, tabs, children }) => {
 DefaultPaperbasePage.propTypes = {
   title: PropTypes.any,
   tabs: PropTypes.any,
+  buttons: PropTypes.any,
   children: PropTypes.any,
 };
 

@@ -116,12 +116,14 @@ export const createChartByObject = (object, options) => {
       graphString += `
     ${nodeId}(["${value.name}"])`;
     } else {
-      if (object.output.includes(nodeId)) {
-        graphString += `
-    ${nodeId}[/"${value.name}"/]:::output`;
-      } else {
-        graphString += `
-    ${nodeId}["${value.name}"]`;
+      if (options?.showOrphans || !object.orphans.includes(nodeId)) {
+        if (object.output.includes(nodeId)) {
+          graphString += `
+      ${nodeId}[/"${value.name}"/]:::output`;
+        } else {
+          graphString += `
+      ${nodeId}["${value.name}"]`;
+        }
       }
     }
   });

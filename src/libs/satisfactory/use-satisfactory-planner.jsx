@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { getRecipesByProduct, CONFIG_TEMPLATE, RESULT_TEMPLATE } from './statistics';
-import useLocalStorage from 'src/custom/hooks/use-local-storage';
+import useLocalStorage from '../../hooks/use-local-storage';
 import { nanoid } from 'nanoid';
 
 // function createCustomTimeout(seconds) {

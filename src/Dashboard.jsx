@@ -6,15 +6,32 @@ import { SplashScreen } from './components/default/splash-screen';
 import { ConfirmProvider } from 'material-ui-confirm';
 import { QueryParamProvider } from 'use-query-params';
 import { ReactRouter6Adapter } from 'use-query-params/adapters/react-router-6';
-import { AuthConsumer, AuthProvider } from './context/auth';
+//import { AuthConsumer, AuthProvider } from './context/auth';
 import PropTypes from 'prop-types';
 import { Seo, setPageTitleSuffix } from './components/default/seo';
-import { DataFramework } from './libs/data-framework';
+import IssueDialog from './components/default/issue-dialog';
+import useDialog from './hooks/use-dialog';
+import { OPTIONS } from './App';
+import { DataProvider } from './libs/data-sources';
+import useLogger from './hooks/use-logger';
+import FirebaseAuthProvider from './libs/auth/auth-providers/FirebaseAuthProvider';
+import { AuthConsumer, AuthProvider } from './libs/auth';
+import { ThemeProvider } from '@mui/material';
+import { logger } from './libs/logger';
 
 const Dashboard = (props) => {
+  // Initialize logger
+  logger(import.meta.env.DEV);
+  //const [debug, , forceLog] = useLogger(import.meta.env.DEV);
+  //forceLog.log('Debug mode: ' + debug);
+
   console.log('Initialize app with props', props);
   // Redirect to HTTPS
   useHttpsRedirect(props?.options?.httpsRedirect);
+
+  // Issue dialog
+  const dialog = useDialog();
+  OPTIONS.issueDialogOpen = dialog.setDialogOpen;
 
   // Custom redirect from root page
   const navigate = useRouter();
@@ -31,40 +48,53 @@ const Dashboard = (props) => {
 
   return (
     <>
-      <AuthProvider>
-        <AuthConsumer>
-          {(auth) => {
-            console.log(auth);
+      <ThemeProvider theme={props.theme}>
+        <AuthProvider
+          provider={props.authProvider}
+          redirectAfterLogout={props.options?.config?.auth?.redirectAfterLogout || '/'}
+        >
+          <AuthConsumer>
+            {(auth) => {
+              // Check if splashscreen should be shown
+              const showSlashScreen = !auth.isInitialized;
+              if (showSlashScreen) return <SplashScreen />;
 
-            // Check if splashscreen should be shown
-            const showSlashScreen = !auth.isInitialized;
-            if (showSlashScreen) return <SplashScreen />;
+              return (
+                // <DataFramework
+                //   logger={console}
+                //   resources={props.options?.resources}
+                // >
+                <DataProvider dataSources={props.dataSources}>
+                  <QueryParamProvider adapter={ReactRouter6Adapter}>
+                    <ConfirmProvider>
+                      <Seo />
+                      <IssueDialog
+                        onSave={(values) => console.log(values)}
+                        open={dialog.open}
+                        onClose={() => dialog.setDialogOpen(false)}
+                      />
 
-            return (
-              <DataFramework
-                logger={console}
-                resources={props.options?.resources}
-              >
-                <QueryParamProvider adapter={ReactRouter6Adapter}>
-                  <ConfirmProvider>
-                    <Seo />
-
-                    {element}
-                    {/* <pre>{JSON.stringify(props.options, null, 2)}</pre> */}
-                  </ConfirmProvider>
-                </QueryParamProvider>
-              </DataFramework>
-            );
-          }}
-        </AuthConsumer>
-      </AuthProvider>
+                      {element}
+                      {/* <pre>{JSON.stringify(props.options, null, 2)}</pre> */}
+                    </ConfirmProvider>
+                  </QueryParamProvider>
+                </DataProvider>
+                // </DataFramework>
+              );
+            }}
+          </AuthConsumer>
+        </AuthProvider>
+      </ThemeProvider>
     </>
   );
 };
 
 Dashboard.propTypes = {
   options: PropTypes.object,
+  theme: PropTypes.any.isRequired,
   routes: PropTypes.array,
+  dataSources: PropTypes.array,
+  authProvider: PropTypes.any,
 };
 
 export default Dashboard;

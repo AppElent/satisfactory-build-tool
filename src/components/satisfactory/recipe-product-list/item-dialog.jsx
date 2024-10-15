@@ -61,6 +61,8 @@ const ItemDialog = ({ product, open, setOpen, setProductId, previousProduct, ...
     ? products[recipe.products[0].itemClass]?.name
     : product.name;
 
+  const productClass = product?.ingredients ? recipe.products[0].itemClass : product.className;
+
   console.log(productName);
 
   return (
@@ -103,7 +105,7 @@ const ItemDialog = ({ product, open, setOpen, setProductId, previousProduct, ...
               },
             }}
           >
-            <img src={`/assets/satisfactory/products/${productName}.png`} />
+            <img src={`/assets/satisfactory/products/${productClass}.jpg`} />
           </Box>
           <Box sx={{ flexGrow: 1 }}>
             <Typography
@@ -158,6 +160,7 @@ const ItemDialog = ({ product, open, setOpen, setProductId, previousProduct, ...
                         <Link
                           variant="body2"
                           color="inherit"
+                          href="#"
                           onClick={() => setProductId(recipe.className)}
                         >
                           {recipe.name}
@@ -190,6 +193,7 @@ const ItemDialog = ({ product, open, setOpen, setProductId, previousProduct, ...
                                 <Link
                                   variant="body2"
                                   color="inherit"
+                                  href="#"
                                   onClick={() => setProductId(ingredient.itemClass)}
                                 >
                                   {ingredient.quantity} x{' '}
@@ -240,6 +244,7 @@ const ItemDialog = ({ product, open, setOpen, setProductId, previousProduct, ...
                                 <Link
                                   variant="body2"
                                   color="inherit"
+                                  href="#"
                                   onClick={() => setProductId(product.itemClass)}
                                 >
                                   {product.quantity} x {products[product.itemClass]?.name || ''} (

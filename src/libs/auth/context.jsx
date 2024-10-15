@@ -1,14 +1,6 @@
-import {
-  createUserWithEmailAndPassword,
-  getAuth,
-  GoogleAuthProvider,
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
-  signInWithPopup,
-  signOut,
-} from 'firebase/auth';
 import PropTypes from 'prop-types';
 import { createContext, useEffect, useReducer, useContext } from 'react';
+import { useRouter } from '../../hooks/use-router';
 
 export const initialState = {
   isAuthenticated: false,
@@ -46,12 +38,12 @@ const reducer = (state, action) => {
 };
 
 export const AuthProvider = (props) => {
-  const auth = getAuth();
-  const { children } = props;
+  const { provider, redirectAfterLogout, children } = props;
   const [state, dispatch] = useReducer(reducer, initialState);
+  const router = useRouter();
 
-  const handleAuthStateChanged = (user) => {
-    console.log('User authentication changed', user);
+  const handleAuthStateChanged = async (user) => {
+    console.log('User authentication changed', { user, provider });
     if (user) {
       // Here you should extract the complete user profile to make it available in your entire app.
       // The auth state only provides basic information.
@@ -59,14 +51,7 @@ export const AuthProvider = (props) => {
         type: 'AUTH_STATE_CHANGED',
         payload: {
           isAuthenticated: true,
-          user: {
-            id: user.uid,
-            avatar: user.photoURL || undefined,
-            email: user.email || 'user@demo.com',
-            name: user.displayName || 'Unknown user',
-            plan: 'Premium',
-            raw: user,
-          },
+          user: await provider.getCurrentUser(),
         },
       });
     } else {
@@ -77,42 +62,40 @@ export const AuthProvider = (props) => {
           user: null,
         },
       });
+      router.replace(redirectAfterLogout);
     }
   };
 
-  useEffect(
-    () => onAuthStateChanged(auth, handleAuthStateChanged),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
-  );
+  useEffect(() => provider.onAuthStateChanged(handleAuthStateChanged)(), [provider]);
 
-  const _signInWithEmailAndPassword = async (email, password) => {
-    await signInWithEmailAndPassword(auth, email, password);
-  };
+  // const _signInWithEmailAndPassword = async (email, password) => {
+  //   await signInWithEmailAndPassword(auth, email, password);
+  // };
 
-  const signInWithGoogle = async () => {
-    const provider = new GoogleAuthProvider();
+  // const signInWithGoogle = async () => {
+  //   const provider = new GoogleAuthProvider();
 
-    await signInWithPopup(auth, provider);
-  };
+  //   await signInWithPopup(auth, provider);
+  // };
 
-  const _createUserWithEmailAndPassword = async (email, password) => {
-    await createUserWithEmailAndPassword(auth, email, password);
-  };
+  // const _createUserWithEmailAndPassword = async (email, password) => {
+  //   await createUserWithEmailAndPassword(auth, email, password);
+  // };
 
-  const _signOut = async () => {
-    await signOut(auth);
-  };
+  // const _signOut = async () => {
+  //   await signOut(auth);
+  // };
 
   return (
     <AuthContext.Provider
       value={{
         ...state,
-        issuer: 'FIREBASE',
-        createUserWithEmailAndPassword: _createUserWithEmailAndPassword,
-        signInWithEmailAndPassword: _signInWithEmailAndPassword,
-        signInWithGoogle,
-        signOut: _signOut,
+        issuer: provider.provider,
+        signUp: provider.signUp,
+        signInWithEmailAndPassword: provider.signIn,
+        signInWithGoogle: provider.signInWithGoogle,
+        signOut: provider.signOut,
+        provider,
       }}
     >
       {children}
@@ -121,5 +104,7 @@ export const AuthProvider = (props) => {
 };
 
 AuthProvider.propTypes = {
+  provider: PropTypes.object.isRequired,
+  redirectAfterLogout: PropTypes.string,
   children: PropTypes.node.isRequired,
 };

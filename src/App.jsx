@@ -13,12 +13,17 @@ import { db } from './libs/firebase';
 import AuthGuard from './guards/auth-guard';
 import Calculations from './pages/calculations';
 import RawData from './pages/rawdata';
-import DefaultPaperbasePage from './pages/default/DefaultPaperbasePage';
+import SatisfactoryHome from './pages/home';
 import RecipePage from './pages/recipe-page';
 import ProductPage from './pages/product-page';
 import RecipeProductDialog from './components/satisfactory/recipe-product-list/recipe-product-dialog';
 import TierLayout from './pages/tier-layout';
 import RecipeSelectorPage from './pages/recipe-selector-page';
+import FactoryCalculator from './pages/factory-calculator';
+import { FirebaseDataSource } from './libs/data-sources';
+import theme from './theme/paperbase/theme';
+import { FirebaseAuthProvider } from './libs/auth';
+import FirebaseDataSourceNoRealtime from './libs/data-sources/data-sources/FirebaseDataSourceNoRealtime';
 
 export const OPTIONS = {
   data: {
@@ -43,7 +48,7 @@ export const OPTIONS = {
     confirmationButtonProps: { variant: 'contained', autoFocus: true },
     cancellationButtonProps: { variant: 'outlined', color: 'error' },
   },
-  config: { auth: { redirectAfterLogin: '/app', redirectAfterLogout: '/' } },
+  config: { auth: { redirectAfterLogin: '/', redirectAfterLogout: '/' } },
   menu: [
     {
       id: 'Satisfactory',
@@ -61,6 +66,11 @@ export const OPTIONS = {
           id: 'Recipe selector',
           icon: <AssignmentRoundedIcon />,
           href: '/satisfactory/recipeselector',
+        },
+        {
+          id: 'Factory calculator',
+          icon: <AssignmentRoundedIcon />,
+          href: '/satisfactory/factorycalculator',
         },
         // { id: 'Storage', icon: <AssignmentRoundedIcon /> },
         // { id: 'Hosting', icon: <AssignmentRoundedIcon /> },
@@ -121,6 +131,14 @@ export const OPTIONS = {
   ],
 };
 
+if (!OPTIONS.menu.find((item) => item.id === 'Test pages') && import.meta.env.DEV)
+  OPTIONS.menu.push({
+    id: 'Test pages',
+    children: [
+      { id: 'Data operations', icon: <PeopleIcon />, href: '/satisfactory/test/data-operations' },
+    ],
+  });
+
 const resources = [
   {
     name: 'test01',
@@ -137,6 +155,13 @@ const resources = [
       dataProviderName: 'firestore',
     },
   },
+];
+
+const dataSources = [
+  { key: 'dummy', dataSource: new FirebaseDataSource(db, 'dummy') },
+  { key: 'dummy2', dataSource: new FirebaseDataSourceNoRealtime(db, 'dummy') },
+
+  // Add more data sources as needed
 ];
 
 function App() {
@@ -165,7 +190,7 @@ function App() {
       children: [
         {
           index: true,
-          element: <DefaultPaperbasePage title="Overview" />,
+          element: <SatisfactoryHome />,
         },
         // {
         //   path: 'account',
@@ -195,6 +220,10 @@ function App() {
           path: 'recipeselector',
           element: <RecipeSelectorPage />,
         },
+        {
+          path: 'factorycalculator',
+          element: <FactoryCalculator />,
+        },
         ...appRoutes,
       ],
     },
@@ -206,6 +235,9 @@ function App() {
         routes={routes}
         resources={resources}
         options={OPTIONS}
+        dataSources={dataSources}
+        authProvider={new FirebaseAuthProvider()}
+        theme={theme}
       />
     </>
   );

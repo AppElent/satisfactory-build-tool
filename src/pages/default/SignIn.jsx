@@ -23,7 +23,7 @@ import ColorModeSelect from '../../theme/ColorModeSelect';
 import { useMounted } from '../../hooks/use-mounted';
 import { useRouter } from '../../hooks/use-router';
 import { useSearchParams } from '../../hooks/use-search-params';
-import { useAuth } from '../../context/auth';
+import { useAuth } from '../../libs/auth';
 import { OPTIONS } from '../../App';
 
 const Card = styled(MuiCard)(({ theme }) => ({
@@ -47,8 +47,13 @@ const Card = styled(MuiCard)(({ theme }) => ({
 
 const SignInContainer = styled(Stack)(({ theme }) => ({
   padding: 20,
-  marginTop: '10vh',
-  minWidth: 500,
+  minHeight: '100vh',
+  minWidth: '100vw',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  position: 'relative',
+  width: '100%',
   '&::before': {
     content: '""',
     display: 'block',
@@ -68,7 +73,7 @@ export default function SignIn(props) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const returnTo = searchParams.get('returnTo');
-  const { /*issuer,*/ signInWithEmailAndPassword /*, signInWithGoogle*/ } = useAuth();
+  const { /*issuer,*/ signInWithEmailAndPassword, signUp /*, signInWithGoogle*/ } = useAuth();
 
   const { mode, ...themeProps } = props;
 
@@ -99,7 +104,11 @@ export default function SignIn(props) {
     validationSchema,
     onSubmit: async (values, helpers) => {
       try {
-        await signInWithEmailAndPassword(values.email, values.password);
+        if (mode === 'signin') {
+          await signInWithEmailAndPassword(values.email, values.password);
+        } else {
+          await signUp(values.email, values.password);
+        }
 
         const redirectUrl = returnTo
           ? returnTo
@@ -122,10 +131,6 @@ export default function SignIn(props) {
     },
   });
 
-  //   const [emailError, setEmailError] = React.useState(false);
-  //   const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
-  //   const [passwordError, setPasswordError] = React.useState(false);
-  //   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
@@ -145,39 +150,13 @@ export default function SignIn(props) {
     });
   };
 
-  //   const validateInputs = () => {
-  //     const email = document.getElementById('email');
-  //     const password = document.getElementById('password');
-
-  //     let isValid = true;
-
-  //     if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
-  //       setEmailError(true);
-  //       setEmailErrorMessage('Please enter a valid email address.');
-  //       isValid = false;
-  //     } else {
-  //       setEmailError(false);
-  //       setEmailErrorMessage('');
-  //     }
-
-  //     if (!password.value || password.value.length < 6) {
-  //       setPasswordError(true);
-  //       setPasswordErrorMessage('Password must be at least 6 characters long.');
-  //       isValid = false;
-  //     } else {
-  //       setPasswordError(false);
-  //       setPasswordErrorMessage('');
-  //     }
-
-  //     return isValid;
-  //   };
-
   return (
     <AppTheme {...themeProps}>
       <CssBaseline enableColorScheme />
       <SignInContainer
         direction="column"
-        justifyContent="space-between"
+        justifyContent="center"
+        alignItems="center"
       >
         <ColorModeSelect sx={{ position: 'fixed', top: '1rem', right: '1rem' }} />
         <Card variant="outlined">
@@ -217,7 +196,6 @@ export default function SignIn(props) {
                 required
                 fullWidth
                 variant="outlined"
-                // color={emailError ? 'error' : 'primary'}
                 sx={{ ariaLabel: 'email' }}
               />
             </FormControl>
@@ -237,7 +215,6 @@ export default function SignIn(props) {
                   required
                   fullWidth
                   variant="outlined"
-                  // color={emailError ? 'error' : 'primary'}
                   sx={{ ariaLabel: 'email' }}
                 />
               </FormControl>
@@ -255,11 +232,9 @@ export default function SignIn(props) {
                 name="password"
                 type="password"
                 id="password"
-                // autoComplete="current-password"
                 required
                 fullWidth
                 variant="outlined"
-                // color={passwordError ? 'error' : 'primary'}
               />
             </FormControl>
             {mode === 'signin' && (
@@ -284,11 +259,9 @@ export default function SignIn(props) {
                   name="confirmPassword"
                   type="password"
                   id="confirmPassword"
-                  // autoComplete="current-password"
                   required
                   fullWidth
                   variant="outlined"
-                  // color={passwordError ? 'error' : 'primary'}
                 />
               </FormControl>
             )}
@@ -350,6 +323,7 @@ export default function SignIn(props) {
             <Button
               type="submit"
               fullWidth
+              disabled
               variant="outlined"
               onClick={() => alert('Sign in with Google')}
               startIcon={<GoogleIcon />}
@@ -359,6 +333,7 @@ export default function SignIn(props) {
             <Button
               type="submit"
               fullWidth
+              disabled
               variant="outlined"
               onClick={() => alert('Sign in with Facebook')}
               startIcon={<FacebookIcon />}

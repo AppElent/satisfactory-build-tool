@@ -1,6 +1,6 @@
 import { Box, Button, Paper } from '@mui/material';
 // import { useState } from 'react';
-import { useAuth } from '../../context/auth';
+import { useAuth } from '../../libs/auth';
 import DefaultPaperbasePage from './DefaultPaperbasePage';
 
 const Account = () => {

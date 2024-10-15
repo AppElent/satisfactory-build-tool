@@ -23,10 +23,9 @@ import {
 } from '@mui/material';
 // import ArrowRightIcon from '@untitled-ui/icons-react/build/esm/ArrowRight';
 // import SearchMdIcon from '@untitled-ui/icons-react/build/esm/SearchMd';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 // import { Scrollbar } from 'src/components/scrollbar';
-import { useItems } from '../../../hooks/use-items';
 import { useKey } from '../../../hooks/use-key';
 import useModal from '../../../hooks/use-modal';
 import { getSatisfactoryData, getSatisfactoryDataArray } from '../../../libs/satisfactory';
@@ -34,6 +33,8 @@ import { useQueryParam } from 'use-query-params';
 import ClearIcon from '@mui/icons-material/Clear';
 
 import ItemDialog from './item-dialog';
+import useFilter from '../../../hooks/use-filter';
+import useTabs from '../../../hooks/use-tabs';
 
 const RecipeProductList = ({ productOrRecipe }) => {
   // Get satisfactory version
@@ -42,6 +43,38 @@ const RecipeProductList = ({ productOrRecipe }) => {
   // Initiate models
   const modal = useModal();
   const recipeModal = useModal();
+
+  // Tabs
+  const tabsData = [
+    {
+      label: 'All',
+      value: 'all',
+    },
+
+    { label: 'Tier 0', value: 'tier0' },
+    { label: 'Tier 1', value: 'tier1' },
+    { label: 'Tier 2', value: 'tier2' },
+    { label: 'Tier 3', value: 'tier3' },
+    { label: 'Tier 4', value: 'tier4' },
+    { label: 'Tier 5', value: 'tier5' },
+    { label: 'Tier 6', value: 'tier6' },
+    { label: 'Tier 7', value: 'tier7' },
+    { label: 'Tier 8', value: 'tier8' },
+    { label: 'No tier', value: 'notier' },
+    {
+      label: 'Alternate',
+      value: 'alternate',
+    },
+    {
+      label: 'Mam',
+      value: 'mam',
+    },
+    {
+      label: 'FICSMAS',
+      value: 'ficsmas',
+    },
+  ];
+  const tabs = useTabs({ queryParamName: 'tab', initial: 'all', tabsData });
 
   // Set previous items
   const [previousProduct, setPreviousProduct] = useState();
@@ -55,14 +88,27 @@ const RecipeProductList = ({ productOrRecipe }) => {
   const productsArray = useMemo(() => getSatisfactoryDataArray('items', version), [version]);
   const machines = useMemo(() => getSatisfactoryData('buildables', version), [version]);
 
-  const { items, pageItems, search, handlers } = useItems(
+  // const { items, pageItems, search, handlers } = useItems(
+  //   productOrRecipe === 'product' ? productsArray : recipeArray,
+  //   {
+  //     sortBy: 'name',
+  //     filters: { isFuel: { min: true } },
+  //     rowsPerPage: 25,
+  //   }
+  // );
+
+  const { data: filteredItems, ...filterOptions } = useFilter(
     productOrRecipe === 'product' ? productsArray : recipeArray,
     {
-      sortBy: 'name',
-      filters: { isFuel: { min: true } },
-      rowsPerPage: 25,
+      initialSortField: 'name',
+      initialSortDirection: 'asc',
+      initialRowsPerPage: 25,
+      initialPage: 0,
+      //searchableFields: ['name'],
     }
   );
+
+  console.log(filteredItems, filterOptions);
 
   const sortOptions = [
     {
@@ -75,20 +121,36 @@ const RecipeProductList = ({ productOrRecipe }) => {
     },
   ];
 
-  const tabsData = [
-    {
-      label: 'All',
-      value: 'all',
-    },
-    {
-      label: 'Alternate',
-      value: 'alternate',
-    },
-    {
-      label: 'Mam',
-      value: 'mam',
-    },
-  ];
+  const filterFunction = (row) => {
+    switch (tabs.tab) {
+      case 'all':
+        return true;
+      case 'alternate':
+        return productOrRecipe === 'product' ? true : row.isAlternate;
+      case 'mam':
+        return row.producedIn === 'MAM';
+      case 'tier0':
+      case 'tier1':
+      case 'tier2':
+      case 'tier3':
+      case 'tier4':
+      case 'tier5':
+      case 'tier6':
+      case 'tier7':
+      case 'tier8':
+        return productOrRecipe === 'product'
+          ? row.tier === parseInt(tabs.tab.replace('tier', ''))
+          : products[row.products[0]?.itemClass]?.tier === parseInt(tabs.tab.replace('tier', ''));
+      case 'notier':
+        return !row.tier && !row.name.toString().toLowerCase().includes('ficsmas');
+      case 'ficsmas':
+        return row.name.toString().toLowerCase().includes('ficsmas');
+    }
+  };
+
+  useEffect(() => {
+    filterOptions.addFilter('tab', filterFunction);
+  }, [tabs.tab]);
 
   return (
     <>
@@ -124,13 +186,15 @@ const RecipeProductList = ({ productOrRecipe }) => {
             indicatorColor="primary"
             scrollButtons="auto"
             textColor="primary"
-            value="all" //{search.filters || 'all'}
+            //value="all" //{search.filters || 'all'}
             sx={{ px: 3 }}
             variant="scrollable"
+            value={tabs.tab}
             onChange={(e, value) => {
               console.log(value);
-              if (value === 'all') return handlers.handleFiltersChange(undefined);
-              handlers.handleFiltersChange(value);
+              //if (value === 'all') return filterOptions.removeFilter('tab');
+              //filterOptions.addFilter('tab', filterFunction);
+              tabs.setTab(value);
             }}
           >
             {tabsData.map((tab) => (
@@ -160,7 +224,7 @@ const RecipeProductList = ({ productOrRecipe }) => {
                 <InputAdornment position="end">
                   <IconButton
                     aria-label="clear"
-                    onClick={() => handlers.handleSearchChange('')}
+                    onClick={() => filterOptions.setSearchQuery('')}
                     onMouseDown={(e) => e.preventDefault()}
                     edge="end"
                   >
@@ -169,16 +233,16 @@ const RecipeProductList = ({ productOrRecipe }) => {
                 </InputAdornment>
               }
               autoFocus
-              value={search.search || ''}
+              value={filterOptions.searchQuery || ''}
               sx={{ flexGrow: 1 }}
-              onChange={(e) => handlers.handleSearchChange(e.target.value)}
+              onChange={(e) => filterOptions.setSearchQuery(e.target.value)}
             />
             <TextField
               label="Sort By"
               name="sort"
               select
-              value={search.sortDir || 'asc'}
-              onChange={(e) => handlers.handleSortChange(e.target.value)}
+              value={filterOptions.sortDirection || 'asc'}
+              onChange={(e) => filterOptions.setSortDirection(e.target.value)}
               //SelectProps={{ native: true }}
             >
               {sortOptions.map((option) => (
@@ -192,6 +256,7 @@ const RecipeProductList = ({ productOrRecipe }) => {
             </TextField>
           </Stack>
           {/* <Scrollbar> */}
+
           <TableContainer style={{ maxHeight: '50vh' }}>
             <Table
               sx={{ minWidth: 700 }}
@@ -210,11 +275,11 @@ const RecipeProductList = ({ productOrRecipe }) => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {pageItems.map((item) => {
+                {filteredItems.map((item) => {
                   const productUrl =
                     productOrRecipe === 'product'
-                      ? `/assets/satisfactory/products/${item.name}.png`
-                      : `/assets/satisfactory/products/${products[item.products?.[0]?.itemClass]?.name}.png`;
+                      ? `/assets/satisfactory/products/${item.className}.jpg`
+                      : `/assets/satisfactory/products/${item.products?.[0]?.itemClass}.jpg`;
                   const recipe =
                     productOrRecipe === 'product'
                       ? recipeArray.find(
@@ -259,31 +324,45 @@ const RecipeProductList = ({ productOrRecipe }) => {
                             <Link
                               color="inherit"
                               variant="subtitle2"
+                              href="#"
                             >
                               {item.name}
                             </Link>
                           </div>
                         </Stack>
                       </TableCell>
-                      <TableCell>
-                        {recipeIngredients.map((p) => (
-                          <div key={p.itemClass}>
-                            {p.quantity} x {products[p.itemClass]?.name} (
-                            {+parseFloat(cyclesMin * p.quantity).toPrecision(3)}/min)
-                          </div>
-                        ))}
-                      </TableCell>
-                      <TableCell>
-                        {machines[recipe?.producedIn]?.name} - {recipe?.craftTime}s
-                      </TableCell>
-                      <TableCell>
-                        {recipeProducts.map((p) => (
-                          <div key={p.itemClass}>
-                            {p.quantity} x {products[p.itemClass]?.name} (
-                            {+parseFloat(cyclesMin * p.quantity).toPrecision(3)}/min)
-                          </div>
-                        ))}
-                      </TableCell>
+                      {!recipe && (
+                        <TableCell
+                          colSpan={3}
+                          align="center"
+                        >
+                          No (default) recipe found
+                        </TableCell>
+                      )}
+                      {recipe && (
+                        <>
+                          <TableCell>
+                            {recipeIngredients.map((p) => (
+                              <div key={p.itemClass}>
+                                {p.quantity} x {products[p.itemClass]?.name} (
+                                {+parseFloat(cyclesMin * p.quantity).toPrecision(3)}/min)
+                              </div>
+                            ))}
+                          </TableCell>
+                          <TableCell>
+                            {machines[recipe?.producedIn]?.name} - {recipe?.craftTime}s
+                          </TableCell>
+                          <TableCell>
+                            {recipeProducts.map((p) => (
+                              <div key={p.itemClass}>
+                                {p.quantity} x {products[p.itemClass]?.name} (
+                                {+parseFloat(cyclesMin * p.quantity).toPrecision(3)}/min)
+                              </div>
+                            ))}
+                          </TableCell>
+                        </>
+                      )}
+
                       {/* <TableCell align="right">
                         <IconButton>
                           <SvgIcon> <ArrowRightIcon /> </SvgIcon>
@@ -298,11 +377,11 @@ const RecipeProductList = ({ productOrRecipe }) => {
           {/* </Scrollbar> */}
           <TablePagination
             component="div"
-            count={items.length || 0}
-            onPageChange={handlers.handlePageChange}
-            onRowsPerPageChange={handlers.handleRowsPerPageChange}
-            page={search.page}
-            rowsPerPage={search.rowsPerPage}
+            count={filterOptions.totalFilteredItems || 0}
+            onPageChange={(e, newPage) => filterOptions.setPage(newPage)}
+            onRowsPerPageChange={(e) => filterOptions.setRowsPerPage(parseInt(e.target.value, 10))}
+            page={filteredItems?.length > 0 ? filterOptions.page : 0}
+            rowsPerPage={filterOptions.rowsPerPage}
             rowsPerPageOptions={[5, 10, 25, 100, 200]}
           />
         </Card>
