@@ -1,6 +1,7 @@
 // DataProvider.js
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 
+// Create a context for the data
 export const DataContext = createContext();
 
 const DataProvider = ({ dataSources, children }) => {
@@ -9,6 +10,7 @@ const DataProvider = ({ dataSources, children }) => {
   const [error, setError] = useState({});
   const [subscriptions, setSubscriptions] = useState({});
 
+  // Fetch data from a data source
   const fetchData = useCallback(
     async (key, filter = {}) => {
       if (subscriptions[key]) return; // Skip if there is an active subscription
@@ -28,6 +30,7 @@ const DataProvider = ({ dataSources, children }) => {
     [dataSources, subscriptions]
   );
 
+  // Subscribe to real-time data updates
   const subscribeToData = useCallback(
     (key) => {
       setLoading((prev) => ({ ...prev, [key]: true }));
@@ -47,13 +50,14 @@ const DataProvider = ({ dataSources, children }) => {
     [dataSources]
   );
 
+  // Add a new item to a data source
   const add = async (key, item) => {
     setLoading((prev) => ({ ...prev, [key]: true }));
     setError((prev) => ({ ...prev, [key]: null }));
     try {
       const dataSource = dataSources.find((ds) => ds.key === key).dataSource;
       const newItem = await dataSource.add(item);
-      if (!subscriptions[key]) {
+      if (!subscriptions[key] && data[key]) {
         setData((prev) => ({ ...prev, [key]: [...prev[key], newItem] }));
       }
     } catch (err) {
@@ -63,13 +67,14 @@ const DataProvider = ({ dataSources, children }) => {
     }
   };
 
+  // Update an existing item in a data source
   const update = async (key, id, data) => {
     setLoading((prev) => ({ ...prev, [key]: true }));
     setError((prev) => ({ ...prev, [key]: null }));
     try {
       const dataSource = dataSources.find((ds) => ds.key === key).dataSource;
       await dataSource.update(id, data);
-      if (!subscriptions[key]) {
+      if (!subscriptions[key] && data[key]) {
         setData((prev) => prev[key].map((item) => (item.id === id ? { ...item, ...data } : item)));
       }
     } catch (err) {
@@ -79,13 +84,14 @@ const DataProvider = ({ dataSources, children }) => {
     }
   };
 
+  // Remove an item from a data source
   const remove = async (key, id) => {
     setLoading((prev) => ({ ...prev, [key]: true }));
     setError((prev) => ({ ...prev, [key]: null }));
     try {
       const dataSource = dataSources.find((ds) => ds.key === key).dataSource;
       await dataSource.delete(id);
-      if (!subscriptions[key]) {
+      if (!subscriptions[key] && data[key]) {
         setData((prev) => ({
           ...prev,
           [key]: prev[key].filter((item) => item.id !== id),
@@ -98,11 +104,17 @@ const DataProvider = ({ dataSources, children }) => {
     }
   };
 
+  // Clean up subscriptions when the component unmounts
   useEffect(() => {
     return () => {
       Object.values(subscriptions).forEach((unsubscribe) => unsubscribe());
     };
   }, [subscriptions]);
+
+  // Log data changes
+  useEffect(() => {
+    console.log('Data sources have new data', data);
+  }, [data]);
 
   return (
     <DataContext.Provider

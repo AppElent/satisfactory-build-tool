@@ -25,11 +25,43 @@ import useModal from '../hooks/use-modal';
 import { useSatisfactoryPlanner } from '../libs/satisfactory/use-satisfactory-planner';
 import InputDialog from '../sections/factory-calculator/input-dialog';
 import TabGraph from '../sections/factory-calculator/tab-graph';
+import useSatisfactoryCalculator from '../libs/satisfactory/factory-calculator';
 
 const FactoryCalculator = () => {
   const [version] = useQueryParam('version');
   const [debug] = useQueryParam('debug', true);
   const { config, result } = useSatisfactoryPlanner({ autoUpdate: true, version });
+  const recipesToProduce = [
+    {
+      product: 'Desc_IronPlateReinforced_C',
+      amount: 100,
+      mode: 'itemsPerMinute',
+      production_mode: 'output',
+    },
+    {
+      product: 'Desc_Rotor_C',
+      mode: 'max',
+      production_mode: 'output',
+    },
+    {
+      product: 'Desc_Plastic_C',
+      amount: 100,
+      mode: 'itemsPerMinute',
+      production_mode: 'output',
+    },
+  ];
+  const inputsProvided = [{ product: 'Desc_IronPlate_C', amount: 600 }];
+  const recipeList = [];
+  const mode = 'itemsPerMinute';
+  const productionMode = 'PRODUCE';
+  const newresult = useSatisfactoryCalculator(
+    recipesToProduce,
+    inputsProvided,
+    recipeList,
+    mode,
+    productionMode
+  );
+  console.log(newresult);
 
   // Tabs
   const factoryTabData = config.configs.map((c) => ({ label: c.name, value: c.id }));
@@ -51,13 +83,13 @@ const FactoryCalculator = () => {
   const tabs = useTabs({ initial: 'overview', tabname: 'tab', tabData });
   const modal = useModal();
 
-  const recipesToCreate = [
-    { recipe: 'Recipe_IronPlateReinforced_C', mode: 'itemsMin', machines: 2 },
-  ];
+  // const recipesToCreate = [
+  //   { recipe: 'Recipe_IronPlateReinforced_C', mode: 'itemsMin', machines: 2 },
+  // ];
 
-  const preferredRecipes = [
-    { product: 'Desc_IronPlateReinforced_C', recipe: 'Recipe_Alternate_AdheredIronPlate_C' },
-  ];
+  // const preferredRecipes = [
+  //   { product: 'Desc_IronPlateReinforced_C', recipe: 'Recipe_Alternate_AdheredIronPlate_C' },
+  // ];
 
   const buttons = [
     {
@@ -196,7 +228,7 @@ const FactoryCalculator = () => {
               {tabs.tab === 'logging' && <pre>{JSON.stringify(result?.logging, null, 2)}</pre>}
             </>
           )}
-          <JsonViewer data={JSON.stringify(result)} />
+          <JsonViewer data={JSON.stringify(newresult)} />
         </Paper>
       </Box>
     </DefaultPaperbasePage>

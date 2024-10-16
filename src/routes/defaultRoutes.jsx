@@ -1,5 +1,4 @@
 import SignIn from '../pages/default/SignIn';
-import Auth from '../pages/default/Auth';
 
 const defaultRoutes = [
   {
@@ -13,10 +12,6 @@ const defaultRoutes = [
   {
     path: 'login',
     element: <SignIn mode="signin" />,
-  },
-  {
-    path: 'login2',
-    element: <Auth loginMode={true} />,
   },
   {
     path: 'signup',

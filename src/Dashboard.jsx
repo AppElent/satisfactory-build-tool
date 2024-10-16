@@ -13,15 +13,12 @@ import IssueDialog from './components/default/issue-dialog';
 import useDialog from './hooks/use-dialog';
 import { OPTIONS } from './App';
 import { DataProvider } from './libs/data-sources';
-import useLogger from './hooks/use-logger';
-import FirebaseAuthProvider from './libs/auth/auth-providers/FirebaseAuthProvider';
 import { AuthConsumer, AuthProvider } from './libs/auth';
 import { ThemeProvider } from '@mui/material';
-import { logger } from './libs/logger';
 
 const Dashboard = (props) => {
   // Initialize logger
-  logger(import.meta.env.DEV);
+  // logger(import.meta.env.DEV);
   //const [debug, , forceLog] = useLogger(import.meta.env.DEV);
   //forceLog.log('Debug mode: ' + debug);
 
