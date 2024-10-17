@@ -49,18 +49,22 @@ const FactoryCalculator = () => {
       mode: 'itemsPerMinute',
       production_mode: 'output',
     },
+    {
+      product: 'Desc_AluminumScrap_C',
+      amount: 1,
+      mode: 'itemsPerMinute',
+      production_mode: 'output',
+    },
+    {
+      product: 'Desc_IronPlate_C',
+      amount: 700,
+      mode: 'itemsPerMinute',
+      production_mode: 'produce',
+    },
   ];
-  const inputsProvided = [{ product: 'Desc_IronPlate_C', amount: 600 }];
+  const inputsProvided = [{ product: 'Desc_IronPlate_C', amount: 200 }];
   const recipeList = [];
-  const mode = 'itemsPerMinute';
-  const productionMode = 'PRODUCE';
-  const newresult = useSatisfactoryCalculator(
-    recipesToProduce,
-    inputsProvided,
-    recipeList,
-    mode,
-    productionMode
-  );
+  const newresult = useSatisfactoryCalculator(recipesToProduce, inputsProvided, recipeList);
   console.log(newresult);
 
   // Tabs
