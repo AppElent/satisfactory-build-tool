@@ -11,18 +11,25 @@ import Tooltip from '@mui/material/Tooltip';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
-import VersionSelector from '../../components/satisfactory/version-selector';
-import { useAuth } from '../../libs/auth';
+import VersionSelector from '@/components/satisfactory/version-selector';
+import { useAuth } from '@/libs/auth';
 import { ListItemIcon, Menu, MenuItem } from '@mui/material';
+import { useRouter } from '@/hooks/use-router';
 
 function Header(props) {
   const { onDrawerToggle } = props;
   const auth = useAuth();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
+  const router = useRouter();
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuItemClick = (link) => () => {
+    router.push(`/app/${link}`);
+    setAnchorEl(null);
   };
 
   const handleClose = () => {
@@ -93,13 +100,13 @@ function Header(props) {
                   horizontal: 'right',
                 }}
               >
-                <MenuItem onClick={handleClose}>
+                <MenuItem onClick={handleMenuItemClick('account')}>
                   <ListItemIcon>
                     <AccountCircleIcon fontSize="small" />
                   </ListItemIcon>
                   Account
                 </MenuItem>
-                <MenuItem onClick={handleClose}>
+                <MenuItem onClick={handleMenuItemClick('profile')}>
                   <ListItemIcon>
                     <SettingsIcon fontSize="small" />
                   </ListItemIcon>

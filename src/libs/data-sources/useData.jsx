@@ -39,6 +39,7 @@ const useData = (key, options = {}) => {
     add: (item) => add(key, item),
     update: (id, data) => update(key, id, data),
     delete: (id) => remove(key, id),
+    dataSource,
   };
 };
 

@@ -9,9 +9,12 @@ import {
   query,
   where,
 } from 'firebase/firestore';
+import BaseDataSource from './BaseDataSource';
 
-export class FirebaseDataSourceNoRealtime {
+export class FirebaseDataSourceNoRealtime extends BaseDataSource {
   constructor(firestore, collectionName) {
+    super();
+    this.provider = 'FirestoreNoRealtime';
     this.firestore = firestore;
     this.collectionName = collectionName;
     this.collectionRef = collection(firestore, collectionName);

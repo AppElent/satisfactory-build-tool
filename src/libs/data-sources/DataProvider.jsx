@@ -1,5 +1,5 @@
 // DataProvider.js
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useState, useEffect, useCallback } from 'react';
 
 // Create a context for the data
 export const DataContext = createContext();
@@ -9,6 +9,23 @@ const DataProvider = ({ dataSources, children }) => {
   const [loading, setLoading] = useState({});
   const [error, setError] = useState({});
   const [subscriptions, setSubscriptions] = useState({});
+  const [dataSourcesState, setDataSourcesState] = useState(dataSources);
+
+  const addDataSource = useCallback(
+    () => (newDataSource) => {
+      setDataSourcesState((prev) => [...prev, newDataSource]);
+    },
+    [setDataSourcesState]
+  );
+
+  const setDataSource = useCallback(
+    () => (key, dataSource) => {
+      setDataSourcesState((prev) =>
+        prev.map((ds) => (ds.key === key ? { ...ds, dataSource } : ds))
+      );
+    },
+    []
+  );
 
   // Fetch data from a data source
   const fetchData = useCallback(
@@ -119,7 +136,9 @@ const DataProvider = ({ dataSources, children }) => {
   return (
     <DataContext.Provider
       value={{
-        dataSources,
+        dataSources: dataSourcesState,
+        setDataSource,
+        addDataSource,
         data,
         loading,
         error,

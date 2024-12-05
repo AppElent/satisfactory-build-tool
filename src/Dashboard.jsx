@@ -11,10 +11,11 @@ import PropTypes from 'prop-types';
 import { Seo, setPageTitleSuffix } from './components/default/seo';
 import IssueDialog from './components/default/issue-dialog';
 import useDialog from './hooks/use-dialog';
-import { OPTIONS } from './App';
+//import { OPTIONS } from './App';
 import { DataProvider } from './libs/data-sources';
 import { AuthConsumer, AuthProvider } from './libs/auth';
 import { ThemeProvider } from '@mui/material';
+import config from './config';
 
 const Dashboard = (props) => {
   // Initialize logger
@@ -28,7 +29,7 @@ const Dashboard = (props) => {
 
   // Issue dialog
   const dialog = useDialog();
-  OPTIONS.issueDialogOpen = dialog.setDialogOpen;
+  config.issueDialogOpen = dialog.setDialogOpen;
 
   // Custom redirect from root page
   const navigate = useRouter();

@@ -10,9 +10,12 @@ import {
   where,
   onSnapshot,
 } from 'firebase/firestore';
+import BaseDataSource from './BaseDataSource';
 
-export class FirebaseDataSource {
+export class FirebaseDataSource extends BaseDataSource {
   constructor(firestore, collectionName) {
+    super();
+    this.provider = 'Firestore';
     this.firestore = firestore;
     this.collectionName = collectionName;
     this.collectionRef = collection(firestore, collectionName);

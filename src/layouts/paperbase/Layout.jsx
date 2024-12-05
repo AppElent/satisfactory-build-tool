@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
@@ -8,8 +7,9 @@ import Link from '@mui/material/Link';
 import PropTypes from 'prop-types';
 import Navigator from './Navigator';
 import Header from './Header';
-import { OPTIONS } from '../../App';
-import theme from '../../theme/paperbase/theme';
+//import { OPTIONS } from '../../App';
+import theme from '@/theme/paperbase/theme';
+import config from '@/config';
 
 function Copyright() {
   return (
@@ -210,7 +210,7 @@ export default function Paperbase({ children }) {
           component="main"
           sx={{ flex: 1, py: 0, px: 0, bgcolor: '#eaeff1' }}
         >
-          {OPTIONS?.loadComponents && OPTIONS.loadComponents}
+          {config?.custom?.loadComponents && config.custom.loadComponents}
           {children}
         </Box>
         <Box

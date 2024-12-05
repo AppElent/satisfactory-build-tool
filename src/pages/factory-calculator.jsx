@@ -1,15 +1,4 @@
-import {
-  Box,
-  Button,
-  Divider,
-  IconButton,
-  Paper,
-  Stack,
-  Tab,
-  Tabs,
-  TextField,
-  Tooltip,
-} from '@mui/material';
+import { Box, Button, Paper, Stack, Tab, Tabs, TextField } from '@mui/material';
 // import { useState } from 'react';
 import JsonViewer from '@andypf/json-viewer/dist/esm/react/JsonViewer';
 import AddIcon from '@mui/icons-material/Add';
@@ -22,58 +11,90 @@ import DefaultPaperbasePage from './default/DefaultPaperbasePage';
 import { useQueryParam } from 'use-query-params';
 import useTabs from '../hooks/use-tabs';
 import useModal from '../hooks/use-modal';
-import { useSatisfactoryPlanner } from '../libs/satisfactory/use-satisfactory-planner';
 import InputDialog from '../sections/factory-calculator/input-dialog';
 import TabGraph from '../sections/factory-calculator/tab-graph';
-import useSatisfactoryCalculator from '../libs/satisfactory/factory-calculator';
+import useSatisfactoryCalculator from '@/libs/satisfactory/factory-calculator';
+import { useSatisfactoryPlanner } from '@/libs/satisfactory/use-satisfactory-planner';
+import Mermaid from '../libs/mermaid';
+import { useMemo } from 'react';
+import SatisfactoryMermaidChart from '../libs/satisfactory/SatisfactoryMermaidChart';
 
 const FactoryCalculator = () => {
   const [version] = useQueryParam('version');
   const [debug] = useQueryParam('debug', true);
-  const { config, result } = useSatisfactoryPlanner({ autoUpdate: true, version });
-  const recipesToProduce = [
-    {
-      product: 'Desc_IronPlateReinforced_C',
-      amount: 100,
-      mode: 'itemsPerMinute',
-      production_mode: 'output',
-    },
-    {
-      product: 'Desc_Rotor_C',
-      mode: 'max',
-      production_mode: 'output',
-    },
-    {
-      product: 'Desc_Plastic_C',
-      amount: 100,
-      mode: 'itemsPerMinute',
-      production_mode: 'output',
-    },
-    {
-      product: 'Desc_AluminumScrap_C',
-      amount: 1,
-      mode: 'itemsPerMinute',
-      production_mode: 'output',
-    },
-    {
-      product: 'Desc_IronPlate_C',
-      amount: 700,
-      mode: 'itemsPerMinute',
-      production_mode: 'produce',
-    },
-  ];
-  const inputsProvided = [{ product: 'Desc_IronPlate_C', amount: 200 }];
-  const recipeList = [];
-  const newresult = useSatisfactoryCalculator(recipesToProduce, inputsProvided, recipeList);
-  console.log(newresult);
+  //const { config, result } = useSatisfactoryPlanner({ autoUpdate: true, version });
+  const settings = useMemo(
+    () => ({
+      products: [
+        {
+          product: 'Desc_IronPlateReinforced_C',
+          amount: 10,
+          mode: 'itemsPerMinute',
+          production_mode: 'output',
+        },
+        {
+          product: 'Desc_Rotor_C',
+          mode: 'max',
+          production_mode: 'output',
+        },
+        {
+          product: 'Desc_Plastic_C',
+          amount: 100,
+          mode: 'itemsPerMinute',
+          production_mode: 'output',
+        },
+        {
+          product: 'Desc_AluminumScrap_C',
+          amount: 3,
+          mode: 'machines',
+          production_mode: 'output',
+        },
+        // {
+        //   product: 'Desc_IronPlate_C',
+        //   amount: 700,
+        //   mode: 'itemsPerMinute',
+        //   production_mode: 'produce',
+        // },
+      ],
+      inputs: [
+        { product: 'Desc_IronPlate_C', amount: 50 },
+        { product: 'Desc_IronRod_C', amount: 22.5 },
+        // { product: 'Desc_IronScrew_C', amount: 12.5 },
+      ],
+      recipes: [],
+    }),
+    []
+  );
+  const { result, config } = useSatisfactoryCalculator(settings);
+
+  const mermaidChart = result?.productionTotal
+    ? new SatisfactoryMermaidChart().createSimpleMermaidChart(result?.productionTotal || {})
+    : '';
+  const mermaidChart_rotor = result?.production
+    ? new SatisfactoryMermaidChart().createSimpleMermaidChart(
+        result?.production['Desc_Rotor_C'] || {}
+      )
+    : '';
+  const mermaidChart_reinforced = result?.production
+    ? new SatisfactoryMermaidChart().createSimpleMermaidChart(
+        result?.production['Desc_IronPlateReinforced_C'] || {}
+      )
+    : '';
+  const mermaidChart_old = result?.productionTotal
+    ? new SatisfactoryMermaidChart().createSimpleMermaidChart(result?.productionTotal || {})
+    : '';
 
   // Tabs
-  const factoryTabData = config.configs.map((c) => ({ label: c.name, value: c.id }));
-  const factoryTabs = useTabs({
-    initial: factoryTabData.value,
-    tabname: 'factory',
-    tabsData: factoryTabData,
-  });
+  //const factoryTabData = config.configs?.map((c) => ({ label: c.name, value: c.id }));
+  // const factoryTabs = useTabs(
+  //   factoryTabData?.length > 0
+  //     ? {
+  //         initial: factoryTabData?.value,
+  //         tabname: 'factory',
+  //         tabsData: factoryTabData,
+  //       }
+  //     : { initial: 'overview', tabname: 'factory', tabsData: [] }
+  // );
   const tabData = [
     {
       label: 'Overview',
@@ -140,7 +161,7 @@ const FactoryCalculator = () => {
     <DefaultPaperbasePage
       title="Factory calculator"
       buttons={buttons}
-      tabs={factoryTabs}
+      //tabs={factoryTabs}
     >
       <Box sx={{ flexGrow: 1 }}>
         <Paper sx={{ margin: 'auto', overflow: 'hidden', py: 2, px: 2 }}>
@@ -154,7 +175,6 @@ const FactoryCalculator = () => {
               version={version}
             />
           )}
-
           <TextField
             label="Name"
             value={config?.config?.name}
@@ -232,7 +252,15 @@ const FactoryCalculator = () => {
               {tabs.tab === 'logging' && <pre>{JSON.stringify(result?.logging, null, 2)}</pre>}
             </>
           )}
-          <JsonViewer data={JSON.stringify(newresult)} />
+          <JsonViewer data={JSON.stringify(result)} />
+          1:
+          <Mermaid chart={mermaidChart} />
+          2:
+          <Mermaid chart={mermaidChart_old} />
+          Rotor:
+          <Mermaid chart={mermaidChart_rotor} />
+          Reinforced iron plate:
+          <Mermaid chart={mermaidChart_reinforced} />
         </Paper>
       </Box>
     </DefaultPaperbasePage>

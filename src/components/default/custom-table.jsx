@@ -295,7 +295,7 @@ const CustomTable = ({
                 <TableCell padding="checkbox">
                   <Checkbox
                     indeterminate={selected.length > 0 && selected.length < formik.values.length}
-                    checked={formik.values.length > 0 && selected.length === formik.values.length}
+                    checked={formik?.values?.length > 0 && selected.length === formik.values.length}
                     onChange={handleSelectAllClick}
                   />
                 </TableCell>

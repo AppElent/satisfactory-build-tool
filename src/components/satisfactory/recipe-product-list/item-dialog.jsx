@@ -26,7 +26,7 @@ import { SeverityPill } from '../../default/severity-pill';
 import { getSatisfactoryData, getSatisfactoryDataArray } from '../../../libs/satisfactory';
 import { useQueryParam } from 'use-query-params';
 import Mermaid from '../../../libs/mermaid';
-import { recipeChart } from '../../../libs/satisfactory/charts';
+import SatisfactoryMermaidChart from '../../../libs/satisfactory/SatisfactoryMermaidChart';
 
 const ItemDialog = ({ product, open, setOpen, setProductId, previousProduct, ...props }) => {
   const [version] = useQueryParam('version');
@@ -132,7 +132,7 @@ const ItemDialog = ({ product, open, setOpen, setProductId, previousProduct, ...
           </Box>
           {recipe && (
             <Box sx={{ flexGrow: 1, minWidth: '50%' }}>
-              <Mermaid chart={recipeChart(recipe, products, machines)} />
+              <Mermaid chart={new SatisfactoryMermaidChart(version).createRecipeChart(recipe)} />
             </Box>
           )}
         </Stack>

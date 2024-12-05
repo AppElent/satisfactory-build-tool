@@ -5,8 +5,8 @@ import { getSatisfactoryDataArray } from '../libs/satisfactory';
 import { useQueryParam } from 'use-query-params';
 import DefaultPaperbasePage from './default/DefaultPaperbasePage';
 import { useMemo, useState } from 'react';
-import { createChartByObject, createRecipeChartObject } from '../libs/satisfactory/charts';
 import Mermaid from '../libs/mermaid';
+import SatisfactoryMermaidChart from '../libs/satisfactory/SatisfactoryMermaidChart';
 
 const tabsData = [
   { label: 'Tier 0', value: 'tier0' },
@@ -40,12 +40,11 @@ const TierLayout = () => {
     }
   }, [productsArray, tabs.tab]);
 
-  const recipeTierChart = useMemo(
-    () => createRecipeChartObject(tierProducts, version, { showDetails }),
-    [tierProducts, version, showDetails, showOrphans]
+  const defChart = useMemo(
+    () =>
+      new SatisfactoryMermaidChart(version).createChart(tierProducts, { showDetails, showOrphans }),
+    [version, tierProducts, showDetails, showOrphans]
   );
-
-  const chart = createChartByObject(recipeTierChart, { showOrphans });
 
   return (
     <DefaultPaperbasePage
@@ -80,7 +79,7 @@ const TierLayout = () => {
           <div key={product.className}>{product.name}</div>
         ))} */}
         {/* <pre>{JSON.stringify(recipeTierChart, null, 2)}</pre> */}
-        <Mermaid chart={chart} />
+        <Mermaid chart={defChart} />
         {/* <pre>{chart}</pre> */}
       </Paper>
     </DefaultPaperbasePage>

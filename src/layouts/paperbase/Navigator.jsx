@@ -16,8 +16,10 @@ import SettingsInputComponentIcon from '@mui/icons-material/SettingsInputCompone
 import TimerIcon from '@mui/icons-material/Timer';
 import SettingsIcon from '@mui/icons-material/Settings';
 import PhonelinkSetupIcon from '@mui/icons-material/PhonelinkSetup';
-import { OPTIONS } from '../../App';
-import { useRouter } from '../../hooks/use-router';
+
+//import { OPTIONS } from '../../App';
+import { useRouter } from '@/hooks/use-router';
+import config from '@/config';
 
 const categories = [
   {
@@ -66,8 +68,8 @@ const itemCategory = {
 export default function Navigator(props) {
   const { ...other } = props;
   const router = useRouter();
-  const mainItems = OPTIONS?.menu || categories;
-  const title = OPTIONS?.data?.title;
+  const mainItems = config?.menu || categories;
+  const title = config?.data?.title;
 
   return (
     <Drawer
@@ -78,8 +80,8 @@ export default function Navigator(props) {
         <ListItem sx={{ ...item, ...itemCategory, fontSize: 22, color: '#fff' }}>{title}</ListItem>
         <ListItem disablePadding>
           <ListItemButton
-            selected={'/' === window.location.pathname}
-            onClick={() => router.push('/')}
+            selected={(config?.data?.index || '/') === window.location.pathname}
+            onClick={() => router.push(config?.data?.index || '/')}
             sx={item}
           >
             <ListItemIcon>

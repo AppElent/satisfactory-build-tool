@@ -16,15 +16,16 @@ import { styled } from '@mui/material/styles';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
-import ForgotPassword from '../../components/default/auth/ForgotPassword';
+import ForgotPassword from '@/components/default/auth/ForgotPassword';
 import { GoogleIcon, FacebookIcon, SitemarkIcon } from './CustomIcons';
-import AppTheme from '../../theme/AppTheme';
-import ColorModeSelect from '../../theme/ColorModeSelect';
-import { useMounted } from '../../hooks/use-mounted';
-import { useRouter } from '../../hooks/use-router';
-import { useSearchParams } from '../../hooks/use-search-params';
-import { useAuth } from '../../libs/auth';
-import { OPTIONS } from '../../App';
+import AppTheme from '@/theme/AppTheme';
+import ColorModeSelect from '@/theme/ColorModeSelect';
+import { useMounted } from '@/hooks/use-mounted';
+import { useRouter } from '@/hooks/use-router';
+import { useSearchParams } from '@/hooks/use-search-params';
+import { useAuth } from '@/libs/auth';
+import config from '@/config';
+//import { OPTIONS } from '../../App';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -112,8 +113,8 @@ export default function SignIn(props) {
 
         const redirectUrl = returnTo
           ? returnTo
-          : OPTIONS?.config?.auth?.redirectAfterLogin
-            ? OPTIONS?.config?.auth?.redirectAfterLogin
+          : config.auth?.redirectAfterLogin
+            ? config.auth?.redirectAfterLogin
             : '/';
 
         if (isMounted()) {

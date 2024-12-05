@@ -1,5 +1,6 @@
 export class AppwriteDataSource {
   constructor(databaseId, collectionId) {
+    this.provider = 'Appwrite';
     this.databaseId = databaseId;
     this.collectionId = collectionId;
   }

@@ -11,7 +11,7 @@ const RecipeSelectorPage = () => {
     <DefaultPaperbasePage title="Recipe selector">
       <Paper sx={{ margin: 'auto', overflow: 'hidden', py: 2, px: 2 }}>
         <RecipeSelector
-          preferredRecipes={preferredRecipes}
+          preferredRecipes={preferredRecipes || []}
           setPreferredRecipes={setPreferredRecipes}
           deletePreferredRecipes={deletePreferredRecipes}
         />

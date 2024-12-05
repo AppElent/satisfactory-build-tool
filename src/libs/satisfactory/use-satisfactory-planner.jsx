@@ -1,16 +1,18 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
+import { SatisfactoryCurrentVersion } from '.';
 import { getRecipesByProduct, CONFIG_TEMPLATE, RESULT_TEMPLATE } from './statistics';
 import useLocalStorage from '../../hooks/use-local-storage';
 import { nanoid } from 'nanoid';
+import { generateName } from '../random-name-generator';
 
-// function createCustomTimeout(seconds) {
-//   return new Promise((resolve, reject) => {
-//     setTimeout(() => {
-//       resolve();
-//     }, seconds * 1000);
-//   });
-// }
+function createCustomTimeout(seconds) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve();
+    }, seconds * 1000);
+  });
+}
 
 export const useSatisfactoryPlanner = (initialConfig) => {
   const defaultConfig = useMemo(

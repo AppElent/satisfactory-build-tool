@@ -1,5 +1,6 @@
 export class SupabaseDataSource {
   constructor(table) {
+    this.provider = 'Supabase';
     this.table = table;
   }
 

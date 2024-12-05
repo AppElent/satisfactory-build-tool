@@ -1,9 +1,10 @@
 import { AppBar, Box, Button, Grid, IconButton, Toolbar, Tooltip, Typography } from '@mui/material';
 import HelpIcon from '@mui/icons-material/Help';
 import PropTypes from 'prop-types';
-import { Seo } from '../../components/default/seo';
-import TabSection from '../../components/default/tab-section';
-import { OPTIONS } from '../../App';
+import { Seo } from '@/components/default/seo';
+import TabSection from '@/components/default/tab-section';
+import config from '@/config';
+//import { OPTIONS } from '../../App';
 
 const lightColor = 'rgba(255, 255, 255, 0.7)';
 
@@ -42,7 +43,7 @@ const DefaultPaperbasePage = ({ title, tabs, buttons, children }) => {
                 variant="outlined"
                 color="inherit"
                 onClick={() => {
-                  OPTIONS.issueDialogOpen(true);
+                  config.issueDialogOpen(true);
                 }}
                 size="small"
               >

@@ -1,12 +1,20 @@
 import { Suspense } from 'react';
 import Account from '../pages/default/Account';
 import { Outlet } from 'react-router-dom';
-import DataOperationsParent from '../pages/default/test/data-operations';
+import DataSources from '../pages/default/test/data-sources';
 
 const appRoutes = [
   {
     path: 'account',
     element: <Account />,
+  },
+  {
+    path: 'settings',
+    element: <div></div>,
+  },
+  {
+    path: 'profile',
+    element: <div></div>,
   },
   {
     path: 'test',
@@ -17,8 +25,8 @@ const appRoutes = [
     ),
     children: [
       {
-        path: 'data-operations',
-        element: <DataOperationsParent />,
+        path: 'data-sources',
+        element: <DataSources />,
       },
     ],
   },
